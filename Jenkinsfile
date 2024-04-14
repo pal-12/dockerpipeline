@@ -1,24 +1,34 @@
 pipeline {
-    agent any 
-    tools {
-        maven 'MAVEN_HOME'
-	    dockerTool 'docker'
-    }
+    agent any
     stages {
-        stage('Build Maven') {
+        stage('Checkout') {
             steps {
-                // Build the Maven project
-                sh 'mvn clean install'
+git branch: 'main', url: 'https://github.com/pal-12/dockerpipeline'
             }
         }
-        stage('Build docker image') {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image with a tag
-                    sh 'docker build -t doker-pipeline .'
+sh 'docker build -t docker-pipe-line https://github.com/pal-12/dockerpipeline '
                 }
             }
         }
-        
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker run -d --docker-pipe-line -p 8090:8090 docker-pipe-line'
+                }
+            }
+        }
     }
 }
